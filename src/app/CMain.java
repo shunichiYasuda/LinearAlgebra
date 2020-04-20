@@ -7,17 +7,24 @@ import linearAlgebra.CVector_Row;
 public class CMain {
 
 	public static void main(String[] args) {
-		double[] v = {1,2,-1,1};
+		double[] v = {1,2,-1};
 		CVector_Col a = new CVector_Col(v);
 		printVec(a);
-		System.out.println("norm="+a.norm());
-		System.out.println("k=2:"+ a.getValue(2));
-		CVector_Row b = a.tranPort();
+		CVector_Row b = new CVector_Row(new double[] {1,3,-2});
 		printVec(b);
 		System.out.println("-----------------");
-		printMat(a.byVec(b));
-		printVec(a.byVec(b).getRow(2));
-		printVec(a.byVec(b).getCol(1));
+		CMatrix c = a.byVec(b);
+		printMat(c);
+		System.out.println("-----------------");
+		c.setCol(2, a);
+		printMat(c);
+		System.out.println("-----------------");
+		c.setRow(1, b);
+		printMat(c);
+		System.out.println("--------c a matrix by vector---------");
+		printVec(c.byVec(a));
+		System.out.println("--------b c vector by matrix ---------");
+		printVec(b.byMat(c));
 	}
 	//
 	static void printMat(double[][] in) {

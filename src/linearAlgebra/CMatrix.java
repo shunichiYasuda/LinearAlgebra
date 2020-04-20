@@ -2,17 +2,18 @@ package linearAlgebra;
 
 public class CMatrix {
 	private double[][] mat;
-	private int colN, rowN; //行数、列数
-	private boolean isSquare; //正方行列か？
+	public int colN, rowN; //行数、列数
+	public boolean isSquare; //正方行列か？
 	public CMatrix(int m,int n){
 		this.mat = new double[m][n]; //m行ｎ列行列
 		this.rowN = m;
 		this.colN = n;
 		if(m==n) {
-			isSquare = true;
+			this.isSquare = true;
 		}else {
-			isSquare = false;
+			this.isSquare = false;
 		}
+		//基本は単位行列
 		for(int i=0;i<m;i++) {
 			for(int j=0;j<n;j++) {
 				if(i==j) {
@@ -32,9 +33,14 @@ public class CMatrix {
 				this.mat[i][j] = in[i][j];
 			}
 		}
+		if(this.rowN==this.colN) {
+			this.isSquare = true;
+		}else {
+			this.isSquare = false;
+		}
 	} // end of CMatrix(double[][] )
-	//
-	public CMatrix transPort() {
+	//転置
+	public CMatrix transpose() {
 		CMatrix r = new CMatrix(this.colN,this.rowN);
 		for(int i=0;i<r.rowN;i++) {
 			for(int j=0;j<r.colN;j++) {
@@ -43,9 +49,56 @@ public class CMatrix {
 		}
 		return r;
 	}
+	//行列の足し算
+	public CMatrix addMat(CMatrix in) {
+		CMatrix r = new CMatrix(this.rowN,this.colN);
+		for(int i= 0;i<this.rowN;i++) {
+			for(int j=0;j<this.colN;j++) {
+				double d = this.mat[i][j]+in.mat[i][j];
+				r.mat[i][j] = d;
+			}
+		}
+		return r;
+	}
+	//行列の引き算
+	public CMatrix subtractMat(CMatrix in) {
+		CMatrix r = new CMatrix(this.rowN,this.colN);
+		for(int i= 0;i<this.rowN;i++) {
+			for(int j=0;j<this.colN;j++) {
+				double d = this.mat[i][j]-in.mat[i][j];
+				r.mat[i][j] = d;
+			}
+		}
+		return r;
+	}
+	//行列の定数倍
+	public CMatrix byScalar(double in) {
+		CMatrix r = new CMatrix(this.rowN,this.colN);
+		for(int i= 0;i<this.rowN;i++) {
+			for(int j=0;j<this.colN;j++) {
+				double d = this.mat[i][j]*in;
+				r.mat[i][j] = d;
+			}
+		}
+		return r;
+	}
+	//行列かけベクトル。後ろから列ベクトルをかける。
+	//結果はこの行列の行数を次数とする列ベクトル
+	public CVector_Col byVec(CVector_Col in) {
+		CVector_Col r = new CVector_Col(this.rowN);
+		for(int i=0;i<this.rowN;i++) {
+			CVector_Row row = this.getRow(i);
+			r.setValue(i,row.byVec(in));
+		}
+		return r;
+	}
 	//getter
 	public double[][] getMat(){
 		return this.mat;
+	}
+	//第(i,j)要素を返す
+	public double getValue(int i,int j) {
+		return this.mat[i][j];
 	}
 	//第j列を列ベクトルとして返す
 	public CVector_Col getCol(int j) {
@@ -73,10 +126,38 @@ public class CMatrix {
 		}
 		return r;
 	}
+	//正方行列かどうか？
+	public boolean isSquare() {
+		return this.isSquare;
+	}
 	//setter
 	//(i,j)要素に値をセットする
 	public void setValue(int i, int j, double v) {
 		this.mat[i][j] = v;
+	}
+	//第i 行を CVector_Row で置き換える
+	public void setRow(int i, CVector_Row in) {
+		for(int j=0;j<this.colN;j++) {
+			this.mat[i][j] = in.getArray()[j];
+		}
+	}
+	//第i行を double[] で置き換える。
+	public void setRow(int i, double[] in) {
+		for(int j=0;j<this.colN;j++) {
+			this.mat[i][j] = in[j];
+		}
+	}
+	//第j列を CVector_Colで置き換える
+	public void setCol(int j, CVector_Col in) {
+		for(int i=0;i<this.rowN;i++) {
+			this.mat[i][j] = in.getArray()[i];
+		}
+	}
+	//第j列を double[] で置き換える
+	public void setCol(int j, double[] in) {
+		for(int i=0;i<this.rowN;i++) {
+			this.mat[i][j] = in[i];
+		}
 	}
 	
 }

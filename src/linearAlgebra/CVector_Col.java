@@ -29,7 +29,7 @@ public class CVector_Col {
 		return r;
 	}
 	//“]’u
-	public CVector_Row tranPort() {
+	public CVector_Row transpose() {
 		CVector_Row r = new CVector_Row(this.getArray());
 		return r;
 	}
@@ -61,5 +61,21 @@ public class CVector_Col {
 		}
 		return r;
 	}
-	//
+	//ƒmƒ‹ƒ€‚ğ•Ô‚·
+	public double getNorm() {
+		return this.norm;
+	}
+	//setter
+	//‘æ i —v‘f‚É’l‚ğ“ü‚ê‚é
+	public void setValue(int i,double d) {
+		this.mat[i][0] = d;
+		this.norm = norm();
+	}
+	//double[] ‚Å’†g‚ğ“ü‚ê‘Ö‚¦‚é
+	public void setValue(double[] in) {
+		for(int i=0;i<this.dim;i++) {
+			this.mat[i][0] = in[i];
+		}
+		this.norm = norm();
+	}
 }
