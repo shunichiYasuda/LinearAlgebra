@@ -92,6 +92,18 @@ public class CMatrix {
 		}
 		return r;
 	}
+	//この行列の第p列と第q列を入れ替える
+	public void exchangeCol(int p,int q) {
+		CVector_Col tmp = this.getCol(p);
+		this.setCol(p, this.getCol(q));
+		this.setCol(q, tmp);
+	}
+	//この行列の第 p 行と第 q 行を入れ替える
+	public void exchangeRow(int p,int q) {
+		CVector_Row tmp = this.getRow(p);
+		this.setRow(p, this.getRow(q));
+		this.setRow(q, tmp);
+	}
 	//getter
 	public double[][] getMat(){
 		return this.mat;

@@ -25,7 +25,23 @@ public class CMain {
 		printVec(c.byVec(a));
 		System.out.println("--------b c vector by matrix ---------");
 		printVec(b.byMat(c));
-	}
+		System.out.println("--------3x3 matrix ---------");
+		double[][] data ={{1,2,0,-1},{-1,1,2,0},{2,0,1,1},{1,-2,-1,1}};
+		CMatrix original = new CMatrix(data);
+		printMat(original);
+		System.out.println("--------この行列の各行について最大列番号 ---------");
+		for(int i=0;i<original.rowN;i++) {
+			int maxpos = original.getRow(i).hwMaxPos();
+			System.out.println("max pos ="+ maxpos);
+		}
+		System.out.println("--------この行列の各列について最大列番号 ---------");
+		for(int j=0;j<original.colN;j++) {
+			int maxpos = original.getCol(j).hwMaxPos();
+			System.out.println("max pos ="+ maxpos);
+		}
+		System.out.println("--------行ベクトル b の3倍 ---------");
+		printVec(b.byScalar(3.0));
+	} // end of main()
 	//
 	static void printMat(double[][] in) {
 		for (double[] r : in) {

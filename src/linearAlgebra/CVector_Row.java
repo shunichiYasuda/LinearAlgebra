@@ -15,10 +15,20 @@ public class CVector_Row {
 	public CVector_Row(double[] in) {
 		this.dim = in.length;
 		this.mat = new double[1][this.dim];
-		this.norm = norm();
 		for (int i = 0; i < this.dim; i++) {
 			this.mat[0][i] = in[i];
 		}
+		this.norm = norm();
+	}
+
+	//
+	public CVector_Row(CVector_Row in) {
+		this.dim = in.dim;
+		this.mat = new double[1][this.dim];
+		for (int j = 0; j < this.dim; j++) {
+			this.mat[0][j] = in.mat[0][j];
+		}
+		this.norm = norm();
 	}
 
 	//
@@ -36,6 +46,7 @@ public class CVector_Row {
 		CVector_Col r = new CVector_Col(this.getArray());
 		return r;
 	}
+
 	// かけ算後ろから列ベクトル。内積
 	public double byVec(CVector_Col in) {
 		int num_row = this.dim; // このベクトルの次数
@@ -46,16 +57,40 @@ public class CVector_Row {
 		}
 		return d;
 	}
-	//行ベクトルかけ行列 (1,p)(p,n) =(1,n)
-	//結果は行ベクトル
+
+	// 行ベクトルかけ行列 (1,p)(p,n) =(1,n)
+	// 結果は行ベクトル
 	public CVector_Row byMat(CMatrix in) {
-		//結果ベクトルの列数は行列の列数
+		// 結果ベクトルの列数は行列の列数
 		CVector_Row r = new CVector_Row(in.colN);
-		//行列 in から前から順番に列ベクトルを取り出す
-		//その列ベクトルとこの行ベクトルのかけ算をおこない r の要素にする
-		for(int j=0;j<in.colN;j++) {
-			double v =this.byVec(in.getCol(j));
+		// 行列 in から前から順番に列ベクトルを取り出す
+		// その列ベクトルとこの行ベクトルのかけ算をおこない r の要素にする
+		for (int j = 0; j < in.colN; j++) {
+			double v = this.byVec(in.getCol(j));
 			r.mat[0][j] = v;
+		}
+		r.norm = r.norm();
+		return r;
+	}
+
+	// 最大要素の場所（列番号）を返す。
+	public int hwMaxPos() {
+		int max = 0;
+		for (int j = 0; j < this.dim; j++) {
+			double maxValue = Math.abs(this.mat[0][max]);
+			double value = Math.abs(this.mat[0][j]);
+			if (maxValue < value)
+				max = j;
+		}
+		return max;
+	}
+
+	//
+	// スカラー倍
+	public CVector_Row byScalar(double d) {
+		CVector_Row r = new CVector_Row(this);
+		for (int j = 0; j < r.dim; j++) {
+			r.mat[0][j] *= d;
 		}
 		r.norm = r.norm();
 		return r;
@@ -91,9 +126,10 @@ public class CVector_Row {
 		this.mat[0][j] = d;
 		this.norm = norm();
 	}
-	//double[] で値を置き換える
+
+	// double[] で値を置き換える
 	public void setValue(double[] in) {
-		for(int j =0;j<this.dim;j++) {
+		for (int j = 0; j < this.dim; j++) {
 			this.mat[0][j] = in[j];
 		}
 		this.norm = norm();
