@@ -9,7 +9,7 @@ public class CVector_Col {
 	public CVector_Col(int n) {
 		this.dim = n;
 		this.mat = new double[n][1];
-		this.norm = norm();
+		this.norm();
 	}
 
 	//
@@ -19,7 +19,7 @@ public class CVector_Col {
 		for (int i = 0; i < this.dim; i++) {
 			this.mat[i][0] = in[i];
 		}
-		this.norm = norm();
+		this.norm();
 	}
 	
 	//
@@ -29,17 +29,17 @@ public class CVector_Col {
 		for(int i=0;i<this.dim;i++) {
 			this.mat[i][0] = in.mat[i][0];
 		}
-		this.norm = norm();
+		this.norm();
 	}
 
 	//
-	public double norm() {
+	public void norm() {
 		double r = 0.0;
 		for (int i = 0; i < this.dim; i++) {
 			r += this.mat[i][0] * this.mat[i][0];
 		}
 		r = Math.sqrt(r);
-		return r;
+		this.norm = r;
 	}
 
 	// 転置
@@ -66,7 +66,25 @@ public class CVector_Col {
 		for(int i=0;i<r.dim;i++) {
 			r.mat[i][0] *= d;
 		}
-		r.norm = r.norm();
+		r.norm();
+		return r;
+	}
+	//ベクトルの足し算
+	public CVector_Col addVec(CVector_Col in) {
+		CVector_Col r = new CVector_Col(this);
+		for(int i=0;i<r.dim;i++) {
+			r.mat[i][0] += in.mat[i][0];
+		}
+		r.norm();
+		return r;
+	}
+	//ベクトルの引き算
+	public CVector_Col subtractVec(CVector_Col in) {
+		CVector_Col r = new CVector_Col(this);
+		for(int i=0;i<r.dim;i++) {
+			r.mat[i][0] -= in.mat[i][0];
+		}
+		r.norm();
 		return r;
 	}
 	// getter
@@ -92,12 +110,17 @@ public class CVector_Col {
 	public double getNorm() {
 		return this.norm;
 	}
-
+	//ベクトル要素の最大要素の値を返す
+	public double getMax() {
+		int pos = this.hwMaxPos();
+		return this.getValue(pos);
+	}
+	
 	// setter
 	// 第 i 要素に値を入れる
 	public void setValue(int i, double d) {
 		this.mat[i][0] = d;
-		this.norm = norm();
+		this.norm();
 	}
 
 	// double[] で中身を入れ替える
@@ -105,7 +128,7 @@ public class CVector_Col {
 		for (int i = 0; i < this.dim; i++) {
 			this.mat[i][0] = in[i];
 		}
-		this.norm = norm();
+		this.norm();
 	}
 
 	// 最大要素の場所（行番号）を返す。

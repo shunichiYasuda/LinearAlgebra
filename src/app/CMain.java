@@ -29,15 +29,19 @@ public class CMain {
 		double[][] data ={{1,2,0,-1},{-1,1,2,0},{2,0,1,1},{1,-2,-1,1}};
 		CMatrix original = new CMatrix(data);
 		printMat(original);
-		System.out.println("--------この行列の各行について最大列番号 ---------");
+		System.out.println("--------この行列の各行について最大列番号と絶対最大値 ---------");
 		for(int i=0;i<original.rowN;i++) {
 			int maxpos = original.getRow(i).hwMaxPos();
 			System.out.println("max pos ="+ maxpos);
+			double d = original.getRow(i).getMax();
+			System.out.println("max value="+d);
 		}
-		System.out.println("--------この行列の各列について最大列番号 ---------");
+		System.out.println("--------この行列の各列について最大列番号と絶対最大値 ---------");
 		for(int j=0;j<original.colN;j++) {
 			int maxpos = original.getCol(j).hwMaxPos();
 			System.out.println("max pos ="+ maxpos);
+			double d = original.getCol(j).getMax();
+			System.out.println("max value="+d);
 		}
 		System.out.println("--------行ベクトル b の3倍 ---------");
 		printVec(b.byScalar(3.0));
