@@ -39,6 +39,21 @@ public class CMatrix {
 			this.isSquare = false;
 		}
 	} // end of CMatrix(double[][] )
+	public CMatrix(CMatrix in) {
+		this.rowN = in.rowN;
+		this.colN = in.colN;
+		this.mat = new double[this.rowN][this.colN];
+		for(int i=0;i<this.rowN;i++) {
+			for(int j=0;j<this.colN;j++) {
+				this.mat[i][j] = in.mat[i][j];
+			}
+		}
+		if(this.rowN==this.colN) {
+			this.isSquare = true;
+		}else {
+			this.isSquare = false;
+		}
+	}
 	//転置
 	public CMatrix transpose() {
 		CMatrix r = new CMatrix(this.colN,this.rowN);
@@ -81,6 +96,15 @@ public class CMatrix {
 			}
 		}
 		return r;
+	}
+	//自分自身を定数倍
+	public void byScalarThis(double in) {
+		for(int i= 0;i<this.rowN;i++) {
+			for(int j=0;j<this.colN;j++) {
+				double d = this.mat[i][j]*in;
+				this.mat[i][j] = d;
+			}
+		}
 	}
 	//行列かけベクトル。後ろから列ベクトルをかける。
 	//結果はこの行列の行数を次数とする列ベクトル

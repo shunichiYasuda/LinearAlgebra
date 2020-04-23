@@ -105,7 +105,22 @@ public class CVector_Row {
 		r.norm();
 		return r;
 	}
-
+	//自分自身をスカラー倍
+	public void byScalarThis(double d) {
+		for (int j = 0; j < this.dim; j++) {
+			this.mat[0][j] *= d;
+		}
+		this.norm();
+	}
+	//引き算
+	public CVector_Row subtractVec(CVector_Row in) {
+		CVector_Row r = new CVector_Row(this);
+		for(int i=0;i<r.dim;i++) {
+			r.mat[0][i] -= in.mat[0][i];
+		}
+		r.norm();
+		return r;
+	}
 	// getter
 	public int getDim() {
 		return this.dim;

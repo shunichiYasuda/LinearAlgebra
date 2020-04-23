@@ -69,6 +69,13 @@ public class CVector_Col {
 		r.norm();
 		return r;
 	}
+	// 自分自身をスカラー倍
+	public void byScalarThis(double d) {
+		for(int i=0;i<this.dim;i++) {
+			this.mat[i][0] *= d;
+		}
+		this.norm();
+	}
 	//ベクトルの足し算
 	public CVector_Col addVec(CVector_Col in) {
 		CVector_Col r = new CVector_Col(this);
@@ -135,6 +142,17 @@ public class CVector_Col {
 	public int hwMaxPos() {
 		int max = 0;
 		for (int i = 0; i < this.dim; i++) {
+			double maxValue = Math.abs(this.mat[max][0]);
+			double value = Math.abs(this.mat[i][0]);
+			if (maxValue < value)
+				max = i;
+		}
+		return max;
+	}
+	//第k行以下で最大要素の行番号を返す。
+	public int hwMaxPos(int k) {
+		int max = k;
+		for (int i = k; i < this.dim; i++) {
 			double maxValue = Math.abs(this.mat[max][0]);
 			double value = Math.abs(this.mat[i][0]);
 			if (maxValue < value)
