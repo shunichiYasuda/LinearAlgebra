@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import linearAlgebra.CMatrix;
 import linearAlgebra.CVector_Col;
 import linearAlgebra.CVector_Row;
+import linearAlgebra.UnitVector_Col;
 
 public class CMain {
 
@@ -111,6 +112,7 @@ public class CMain {
 				printMat(unit);
 			}
 			//
+			
 
 		}
 
@@ -150,7 +152,18 @@ public class CMain {
 		System.out.println("check");
 		printMat(matA.byMat(invMatA));
 		System.out.println("det ="+matA.det());
-
+		
+		//
+		CMatrix matrixA = new CMatrix(data);
+		System.out.println("----- matrix A ------");
+		printMat(matrixA);
+		CMatrix matrixB = matrixA.contractMat(0, 0);
+		System.out.println("----- matrix B ------");
+		printMat(matrixB);
+		//
+		CMatrix matrixC =matrixB.expanedMat();
+		System.out.println("--------matrix C --------");
+		printMat(matrixC);
 	} // end of main()
 		//
 
@@ -181,6 +194,12 @@ public class CMain {
 			System.out.print("\t" + String.format("%.4f",in.getValue(i)));
 		}
 		System.out.println();
+	}
+	//
+	static void printVec(UnitVector_Col in) {
+		for (int i = 0; i < in.getDim(); i++) {
+			System.out.println(String.format("%4f", in.getValue(i)));
+		}
 	}
 
 }

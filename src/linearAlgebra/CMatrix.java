@@ -69,6 +69,58 @@ public class CMatrix {
 		return r;
 	}
 
+	// 縮小行列
+	public CMatrix contractMat(int i, int j) {
+		// 第i行、第j列を取り去った縮小行列を返す。
+		CMatrix r = new CMatrix(this.rowN-1, this.colN-1);
+		for (int p = 0; p < i; p++) {
+			for (int q = 0; q < j; q++) {
+				r.mat[p][q] = this.mat[p][q];
+			}
+		}
+		for(int p=i+1;p<this.rowN;p++) {
+			for(int q=j+1;q<this.colN;q++) {
+				r.mat[p-1][q-1] = this.mat[p][q];
+			}
+		}
+		return r;
+	}
+	//自分自身を縮小する
+	public void contractMatThis(int i, int j) {
+		double[][] con = new double[this.rowN-1][this.colN-1];
+		for (int p = 0; p < i; p++) {
+			for (int q = 0; q < j; q++) {
+				con[p][q] = this.mat[p][q];
+			}
+		}
+		for(int p=i+1;p<this.rowN;p++) {
+			for(int q=j+1;q<this.colN;q++) {
+				con[p-1][q-1] = this.mat[p][q];
+			}
+		}
+		//
+		this.rowN -= 1;
+		this.colN -=1;
+		this.isSquare = this.isSquare();
+		this.mat = con;
+	}
+	//拡大行列
+	public CMatrix expanedMat() {
+		int theRow = this.rowN;
+		int theCol = this.colN;
+		int exRow = theRow+1;
+		int exCol = theCol+1;
+		//CMatrx() は対角要素が1で他が0であることを利用する。
+		CMatrix r = new CMatrix(exRow,exCol);
+		for(int i=0;i<theRow;i++) {
+			for(int j=0;j<theCol;j++) {
+				r.mat[i+1][j+1] = this.mat[i][j];
+			}
+		}
+		//
+		return r;
+	}
+
 	// 行列の足し算
 	public CMatrix addMat(CMatrix in) {
 		CMatrix r = new CMatrix(this.rowN, this.colN);
@@ -153,6 +205,7 @@ public class CMatrix {
 		} // end of for(...)
 		return r;
 	}
+
 	// 行列式。
 	public double det() {
 		CMatrix original = new CMatrix(this);
@@ -167,8 +220,8 @@ public class CMatrix {
 				count++;
 			} // end of if(...)
 		} // end of for(...)
-		// 以上で置換終わり
-		// ここから上三角行列をつくる
+			// 以上で置換終わり
+			// ここから上三角行列をつくる
 		for (int baseRow = 0; baseRow < original.rowN - 1; baseRow++) {
 			CVector_Row baseRowVec = original.getRow(baseRow);
 			CVector_Row baseRowVecUnit = r.getRow(baseRow);
@@ -197,7 +250,8 @@ public class CMatrix {
 		det = Math.pow(-1.0, count) * det;
 		return det;
 	}// end of det()
-	//逆行列
+		// 逆行列
+
 	public CMatrix inverse() {
 		CMatrix original = new CMatrix(this);
 		CMatrix unit = new CMatrix(this.rowN, this.colN);
@@ -209,7 +263,7 @@ public class CMatrix {
 				unit.exchangeRow(pivotRow, maxpos);
 			} // end of if(...)
 		} // end of for(...)
-		// 以上で置換終わり。ここから上三角行列をつくる
+			// 以上で置換終わり。ここから上三角行列をつくる
 		for (int baseRow = 0; baseRow < original.rowN - 1; baseRow++) {
 			CVector_Row baseRowVec = original.getRow(baseRow);
 			CVector_Row baseRowVecUnit = unit.getRow(baseRow);
@@ -231,8 +285,8 @@ public class CMatrix {
 				unit.setRow(targetRow, resultVecUnit);
 			} // end of for(int targetRow=baseRow+1
 		} // end of for(int baseRow = 0
-		// 以上で original 行列は上三角行列になった。
-		//ガウス・ジョルダン法を上三角行列に適用
+			// 以上で original 行列は上三角行列になった。
+			// ガウス・ジョルダン法を上三角行列に適用
 		for (int pivot = 0; pivot < original.rowN; pivot++) {
 			// pivot 行、pivot列成分を1 にする。
 			double invPivot = 1.0 / original.getValue(pivot, pivot);
@@ -254,10 +308,10 @@ public class CMatrix {
 					original.setRow(i, subVec);
 					unit.setRow(i, subVecUnit);
 				} // end of if()
-			} //end of for(int i=0...
-		} //end of for( int pivot = 0...
+			} // end of for(int i=0...
+		} // end of for( int pivot = 0...
 		return unit;
-	} //end of inverse()
+	} // end of inverse()
 
 	// この行列の第p列と第q列を入れ替える
 	public void exchangeCol(int p, int q) {
