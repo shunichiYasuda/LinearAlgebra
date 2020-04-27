@@ -104,7 +104,18 @@ public class CMatrix {
 		this.isSquare = this.isSquare();
 		this.mat = con;
 	}
-	//拡大行列
+	public CMatrix contractMat(int n) {
+		//行列の先頭 n 列 n行をはぎとる
+		double[][] con = new double[this.rowN-n][this.colN-n];
+		for(int p=n;p<this.rowN;p++) {
+			for(int q=n;q<this.colN;q++) {
+				con[p-n][q-n] = this.mat[p][q];
+			}
+		}
+		CMatrix r = new CMatrix(con);
+		return r;
+	}
+	//拡大行列:<1,0,0,...>ベクトルを先頭に付け加える
 	public CMatrix expanedMat() {
 		int theRow = this.rowN;
 		int theCol = this.colN;
@@ -118,6 +129,16 @@ public class CMatrix {
 			}
 		}
 		//
+		return r;
+	}
+	//拡大行列：次元 n の単位行列を左上に付け加える。
+	public CMatrix expanedMat(int n) {
+		CMatrix r = new CMatrix(this.rowN+n, this.colN+n);
+		for(int i=n;i<r.rowN;i++) {
+			for(int j=n;j<r.colN;j++) {
+				r.mat[i][j] = this.mat[i-n][j-n];
+			}
+		}
 		return r;
 	}
 

@@ -18,36 +18,31 @@ public class Householder {
 		CMatrix A = new CMatrix(data);
 		printMat(A);
 		CVector_Col x = A.getCol(0);
+		System.out.println("-------vector x----------");
 		printVec(x);
 		CVector_Col y = new CVector_Col(x.getDim());
-		printVec(y);
 		double norm_x = x.getNorm();
 		y.setValue(0, (-1)*norm_x);
-		System.out.println("---------------------");
+		System.out.println("--------vector y-----------");
 		printVec(y);
 		//
 		CVector_Col v = x.subtractVec(y);
 		//
-		System.out.println("---------------------");
+		System.out.println("--------vector v-------");
 		printVec(v);
-		System.out.println("---------------------");
 		CMatrix sourceHH = v.byVec(v.transpose());
-		System.out.println("---------------------");
-		printMat(sourceHH);
 		double coef = 2.0 / (v.getNorm()*v.getNorm());
 		sourceHH.byScalarThis(coef);
-		System.out.println("---------------------");
+		System.out.println("------sourceHH----------");
 		printMat(sourceHH);
 		//
 		CMatrix unit = new CMatrix(sourceHH.colN,sourceHH.rowN);
-		System.out.println("---------------------");
-		printMat(unit);
 		//
 		CMatrix HH = unit.subtractMat(sourceHH);
-		System.out.println("---------------------");
+		System.out.println("------HH----------");
 		printMat(HH);
 		//
-		System.out.println("---------A1----------");
+		System.out.println("---------HH * A----------");
 		CMatrix A1 = HH.byMat(A);
 		printMat(A1);
 		System.out.println("--------ëÊ2íiäK----------");
@@ -56,32 +51,36 @@ public class Householder {
 		System.out.println("----A1ÇÃè¨çsóÒ-------");
 		printMat(A2dash);
 		x = A2dash.getCol(0);
-		System.out.println("----------------------");
+		System.out.println("-------vector x----------");
 		printVec(x);
 		y = new CVector_Col(x.getDim());
 		norm_x = x.getNorm();
 		y.setValue(0, (-1)*norm_x);
-		System.out.println("---------------------");
+		System.out.println("--------vector y---------");
 		printVec(y);
 		v = x.subtractVec(y);
-		System.out.println("---------------------");
+		System.out.println("---------vector v ---------");
 		printVec(v);
 		sourceHH = v.byVec(v.transpose());
 		coef = 2.0 / (v.getNorm()*v.getNorm());
 		sourceHH.byScalarThis(coef);
-		System.out.println("---------------------");
+		System.out.println("----------sourceHH-----------");
 		printMat(sourceHH);
 		unit = new CMatrix(sourceHH.colN,sourceHH.rowN);
 		HH = unit.subtractMat(sourceHH);
-		System.out.println("---------------------");
+		System.out.println("---------HH----------");
 		printMat(HH);
 		//HH ÇägëÂ
 		CMatrix H1 = HH.expanedMat();
-		System.out.println("---------------------");
+		System.out.println("-------ägëÂ HH : H1-----------");
 		printMat(H1);
-		System.out.println("---------------------");
-		printMat(H1.byMat(A1));
-		
+		System.out.println("-------H1 * A1--------------");
+		CMatrix A2 = H1.byMat(A1);
+		printMat(A2);
+		//System.out.println("---------------------");
+		//printMat(A2.contractMat(2));
+		//System.out.println("----------------------");
+		//printMat(A2.contractMat(2).expanedMat(2));
 	}
 
 	static void printMat(double[][] in) {
