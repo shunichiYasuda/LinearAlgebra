@@ -10,61 +10,70 @@ import linearAlgebra.CVector_Row;
 public class Householder_Apr27 {
 
 	public static void main(String[] args) {
-		double[][] data = { { 0, 1, 4, -6 }, { 4, -2, -2, 4 }, { -2, 0, 0, 3 }, { 8,1, 6, -2 } };
+		double[][] data = { { 0, 1, 4, -6 }, { 4, -2, -2, 4 }, { -2, 0, 0, 3 }, { 8, 1, 6, -2 } };
 		CMatrix A = new CMatrix(data);
 		printMat(A);
-		System.out.println("det A ="+A.det());
-		CMatrix Q = new CMatrix(A.rowN,A.colN);
-		int loopLimit = A.rowN-1;
-		for(int pivot = 0;pivot < loopLimit;pivot++) {
-			//Householder 小行列をつくる。
-			//行列の pivot 行までは単位行列であるとして、その部分を剥ぎ取る
-			CMatrix Hr = A.contractMat(pivot);
-			System.out.println("-------第"+ pivot +"回 Hr -------");
-			printMat(Hr);
-			//Hrの最初の列ベクトルを x とする。
-			CVector_Col x = Hr.getCol(0);
-			System.out.println("-------第"+ pivot +"回の x-------");
-			printVec(x);
-			CVector_Col y = new CVector_Col(x.getDim());
-			double norm_x = x.getNorm();
-			y.setValue(0, (-1)*norm_x);
-			System.out.println("-------第"+ pivot +"回の y-------");
-			printVec(y);
-			//v = x -y を作る
-			CVector_Col v = x.subtractVec(y);
-			//この行列の Householder 行列
-			CMatrix sourceHH = v.byVec(v.transpose());
-			double coef = 2.0 / (v.getNorm()*v.getNorm());
-			sourceHH.byScalarThis(coef);
-			CMatrix unit = new CMatrix(sourceHH.colN,sourceHH.rowN);
-			CMatrix HH = unit.subtractMat(sourceHH);
-			System.out.println("-------第"+ pivot +"回の HH-------");
-			printMat(HH);
-			//HHを元の次数に拡大
+		CMatrix R = new CMatrix(data);
+		CMatrix Q = new CMatrix(A.rowN, A.colN);
+		int loopLimit = A.rowN - 1;
+		for (int pivot = 0; pivot < loopLimit; pivot++) {
+			// Householder 小行列をつくる。
+			// 行列の pivot 行までは単位行列であるとして、その部分を剥ぎ取る
+			CMatrix Hr = R.contractMat(pivot);
+			//System.out.println("-------第" + pivot + "回 Hr -------");
+			//printMat(Hr);
+			//
+			CMatrix HH = householder(Hr);
+			//System.out.println("-------第" + pivot + "回の HH-------");
+			//printMat(HH);
+			// HHを元の次数に拡大
 			CMatrix exHH = HH.expanedMat(pivot);
-			System.out.println("-------第"+ pivot +"回の exHH-------");
-			printMat(exHH);
-			A = exHH.byMat(A);
-			System.out.println("-------第"+ pivot +"回の 行列A-------");
-			printMat(A);
-			//行列Q を作る。
+			//System.out.println("-------第" + pivot + "回の exHH-------");
+			//printMat(exHH);
+			R = exHH.byMat(R);
+			//System.out.println("-------第" + pivot + "回の 行列R-------");
+			//printMat(R);
+			// 行列Q を作る。
 			Q = Q.byMat(exHH.transpose());
-			System.out.println("-------第"+ pivot +"回の 行列Q-------");
-			printMat(Q);
-		} //end of for(int pivot =0 ...
-		//QR分解のチェック
+			//System.out.println("-------第" + pivot + "回の 行列Q-------");
+			//printMat(Q);
+		} // end of for(int pivot =0 ...
+			// QR分解のチェック
+		System.out.println("---------Q-------");
+		printMat(Q);
+		System.out.println("----------R-------");
+		printMat(R);
 		System.out.println("------QR ----------");
-		printMat(Q.byMat(A));
-		System.out.println("-------R 対角要素の積---------");
-		System.out.println("det R="+ A.det());
-		
+		printMat(Q.byMat(R));
+		System.out.println("----Q trans Q------");
+		printMat(Q.byMat(Q.transpose()));
+
 	}
+
+	//
+	static CMatrix householder(CMatrix in) {
+		// Householder 行列を返す。
+		// in の最初の列ベクトルを x とする。
+		CVector_Col x = in.getCol(0);
+		CVector_Col y = new CVector_Col(x.getDim());
+		double norm_x = x.getNorm();
+		y.setValue(0, (-1) * norm_x);
+		// v = x -y を作る
+		CVector_Col v = x.subtractVec(y);
+		// この行列の Householder 行列
+		CMatrix sourceHH = v.byVec(v.transpose());
+		double coef = 2.0 / (v.getNorm() * v.getNorm());
+		sourceHH.byScalarThis(coef);
+		CMatrix unit = new CMatrix(sourceHH.colN, sourceHH.rowN);
+		CMatrix HH = unit.subtractMat(sourceHH);
+		return HH;
+	}
+
 	static void printMat(double[][] in) {
 		for (double[] r : in) {
 			for (double d : r) {
 				BigDecimal a = BigDecimal.valueOf(d);
-				System.out.print(a.setScale(4,RoundingMode.HALF_UP) + "\t");
+				System.out.print(a.setScale(4, RoundingMode.HALF_UP) + "\t");
 			}
 			System.out.print("\n");
 		}
@@ -84,7 +93,7 @@ public class Householder_Apr27 {
 	//
 	static void printVec(CVector_Row in) {
 		for (int i = 0; i < in.getDim(); i++) {
-			System.out.print("\t" + String.format("%.4f",in.getValue(i)));
+			System.out.print("\t" + String.format("%.4f", in.getValue(i)));
 		}
 		System.out.println();
 	}

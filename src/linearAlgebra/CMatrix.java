@@ -72,71 +72,75 @@ public class CMatrix {
 	// 縮小行列
 	public CMatrix contractMat(int i, int j) {
 		// 第i行、第j列を取り去った縮小行列を返す。
-		CMatrix r = new CMatrix(this.rowN-1, this.colN-1);
+		CMatrix r = new CMatrix(this.rowN - 1, this.colN - 1);
 		for (int p = 0; p < i; p++) {
 			for (int q = 0; q < j; q++) {
 				r.mat[p][q] = this.mat[p][q];
 			}
 		}
-		for(int p=i+1;p<this.rowN;p++) {
-			for(int q=j+1;q<this.colN;q++) {
-				r.mat[p-1][q-1] = this.mat[p][q];
+		for (int p = i + 1; p < this.rowN; p++) {
+			for (int q = j + 1; q < this.colN; q++) {
+				r.mat[p - 1][q - 1] = this.mat[p][q];
 			}
 		}
 		return r;
 	}
-	//自分自身を縮小する
+
+	// 自分自身を縮小する
 	public void contractMatThis(int i, int j) {
-		double[][] con = new double[this.rowN-1][this.colN-1];
+		double[][] con = new double[this.rowN - 1][this.colN - 1];
 		for (int p = 0; p < i; p++) {
 			for (int q = 0; q < j; q++) {
 				con[p][q] = this.mat[p][q];
 			}
 		}
-		for(int p=i+1;p<this.rowN;p++) {
-			for(int q=j+1;q<this.colN;q++) {
-				con[p-1][q-1] = this.mat[p][q];
+		for (int p = i + 1; p < this.rowN; p++) {
+			for (int q = j + 1; q < this.colN; q++) {
+				con[p - 1][q - 1] = this.mat[p][q];
 			}
 		}
 		//
 		this.rowN -= 1;
-		this.colN -=1;
+		this.colN -= 1;
 		this.isSquare = this.isSquare();
 		this.mat = con;
 	}
+
 	public CMatrix contractMat(int n) {
-		//行列の先頭 n 列 n行をはぎとる
-		double[][] con = new double[this.rowN-n][this.colN-n];
-		for(int p=n;p<this.rowN;p++) {
-			for(int q=n;q<this.colN;q++) {
-				con[p-n][q-n] = this.mat[p][q];
+		// 行列の先頭 n 列 n行をはぎとる
+		double[][] con = new double[this.rowN - n][this.colN - n];
+		for (int p = n; p < this.rowN; p++) {
+			for (int q = n; q < this.colN; q++) {
+				con[p - n][q - n] = this.mat[p][q];
 			}
 		}
 		CMatrix r = new CMatrix(con);
 		return r;
 	}
-	//拡大行列:<1,0,0,...>ベクトルを先頭に付け加える
+
+	// 拡大行列:<1,0,0,...>ベクトルを先頭に付け加える
 	public CMatrix expanedMat() {
 		int theRow = this.rowN;
 		int theCol = this.colN;
-		int exRow = theRow+1;
-		int exCol = theCol+1;
-		//CMatrx() は対角要素が1で他が0であることを利用する。
-		CMatrix r = new CMatrix(exRow,exCol);
-		for(int i=0;i<theRow;i++) {
-			for(int j=0;j<theCol;j++) {
-				r.mat[i+1][j+1] = this.mat[i][j];
+		int exRow = theRow + 1;
+		int exCol = theCol + 1;
+		// CMatrx() は対角要素が1で他が0であることを利用する。
+		CMatrix r = new CMatrix(exRow, exCol);
+		for (int i = 0; i < theRow; i++) {
+			for (int j = 0; j < theCol; j++) {
+				r.mat[i + 1][j + 1] = this.mat[i][j];
 			}
 		}
 		//
 		return r;
 	}
-	//拡大行列：次元 n の単位行列を左上に付け加える。
+
+	// 拡大行列：次元 n の単位行列を左上に付け加える。
 	public CMatrix expanedMat(int n) {
-		CMatrix r = new CMatrix(this.rowN+n, this.colN+n);
-		for(int i=n;i<r.rowN;i++) {
-			for(int j=n;j<r.colN;j++) {
-				r.mat[i][j] = this.mat[i-n][j-n];
+		CMatrix r = new CMatrix(this.rowN + n, this.colN + n);
+		for (int i = n; i < r.rowN; i++) {
+			for (int j = n; j < r.colN; j++) {
+				r.mat[i][j] = this.mat[i - n][j - n];
 			}
 		}
 		return r;
@@ -333,6 +337,62 @@ public class CMatrix {
 		} // end of for( int pivot = 0...
 		return unit;
 	} // end of inverse()
+
+	// ハウスホルダー行列を返す。
+	public static CMatrix householder(CMatrix in) {
+		// in の最初の列ベクトルを x とする。
+		CVector_Col x = in.getCol(0);
+		CVector_Col y = new CVector_Col(x.getDim());
+		double norm_x = x.getNorm();
+		y.setValue(0, (-1) * norm_x);
+		// v = x -y を作る
+		CVector_Col v = x.subtractVec(y);
+		// この行列の Householder 行列
+		CMatrix sourceHH = v.byVec(v.transpose());
+		double coef = 2.0 / (v.getNorm() * v.getNorm());
+		sourceHH.byScalarThis(coef);
+		CMatrix unit = new CMatrix(sourceHH.colN, sourceHH.rowN);
+		CMatrix HH = unit.subtractMat(sourceHH);
+		return HH;
+	}
+
+	// この行列を対象にしたハウスホルダー行列を返す。
+	public CMatrix householder() {
+		// 最初の列ベクトルを x とする。
+		CVector_Col x = this.getCol(0);
+		CVector_Col y = new CVector_Col(x.getDim());
+		double norm_x = x.getNorm();
+		y.setValue(0, (-1) * norm_x);
+		// v = x -y を作る
+		CVector_Col v = x.subtractVec(y);
+		// この行列の Householder 行列
+		CMatrix sourceHH = v.byVec(v.transpose());
+		double coef = 2.0 / (v.getNorm() * v.getNorm());
+		sourceHH.byScalarThis(coef);
+		CMatrix unit = new CMatrix(sourceHH.colN, sourceHH.rowN);
+		CMatrix HH = unit.subtractMat(sourceHH);
+		return HH;
+	}
+
+	// この行列のQR 分解 CMatrix の配列として Q,R を返す
+	public CMatrix[] QRDecomp() {
+		CMatrix R = new CMatrix(this);
+		CMatrix Q = new CMatrix(R.rowN, R.colN);
+		int loopLimit = R.rowN - 1;
+		for (int pivot = 0; pivot < loopLimit; pivot++) {
+			// Householder 小行列をつくる。
+			// 行列の pivot 行までは単位行列であるとして、その部分を剥ぎ取る
+			CMatrix Hr = R.contractMat(pivot);
+			CMatrix HH = householder(Hr);
+			// HHを元の次数に拡大
+			CMatrix exHH = HH.expanedMat(pivot);
+			R = exHH.byMat(R);
+			Q = Q.byMat(exHH.transpose());
+		}
+		//以上で Q,R ができたので、配列をつくってそれを返す。
+		CMatrix[] r = {Q,R};
+		return r;
+	}
 
 	// この行列の第p列と第q列を入れ替える
 	public void exchangeCol(int p, int q) {
