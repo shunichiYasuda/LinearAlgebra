@@ -10,8 +10,13 @@ import linearAlgebra.CVector_Row;
 public class Householder_Apr27_2 {
 
 	public static void main(String[] args) {
-		double[][] data = {{ 8, 1, 6, -2 }, { 4, -2, -2, 4 }, { 0, 1, 4, -6 },{ -2, 0, 0, 3 }  };
+		//double[][] data = {{ 8, 1, 6, -2 }, { 4, -2, -2, 4 }, { 0, 1, 4, -6 },{ -2, 0, 0, 3 }  };
 		//double[][] data = {{4,2,1},{3,2,1},{1,1,1}};
+		double[][] data = {{1,0.7841,0.3392,0.4935},
+				{0.7841,1.0,0.4976,0.5469},
+				{0.3392,0.4976,1.0,0.8838},
+				{0.4935,0.5469,0.8838,1.0}
+		};
 		CMatrix A = new CMatrix(data);
 		System.out.println("------- Matrix A ---------");
 		printMat(A);
@@ -50,7 +55,7 @@ public class Householder_Apr27_2 {
 			printVec(check);
 			checkFlag = true;
 			for(int i=0;i<check.getDim();i++) {
-				if(Math.abs(check.getValue(i)) > 1.0E-4) checkFlag =false;
+				if(Math.abs(check.getValue(i)) > 1.0E-5) checkFlag =false;
 			}
 			before = after;
 			n++;
