@@ -72,16 +72,16 @@ public class CVector_Row {
 		r.norm();
 		return r;
 	}
-	//ベクトルの足し算
+
+	// ベクトルの足し算
 	public CVector_Row addVec(CVector_Row in) {
 		CVector_Row r = new CVector_Row(this);
-		for(int j=0;j<r.dim;j++) {
+		for (int j = 0; j < r.dim; j++) {
 			r.mat[0][j] += in.mat[0][j];
 		}
 		r.norm();
 		return r;
 	}
-	
 
 	// 最大要素の場所（列番号）を返す。
 	public int hwMaxPos() {
@@ -105,22 +105,45 @@ public class CVector_Row {
 		r.norm();
 		return r;
 	}
-	//自分自身をスカラー倍
+
+	// 自分自身をスカラー倍
 	public void byScalarThis(double d) {
 		for (int j = 0; j < this.dim; j++) {
 			this.mat[0][j] *= d;
 		}
 		this.norm();
 	}
-	//引き算
+
+	// 引き算
 	public CVector_Row subtractVec(CVector_Row in) {
 		CVector_Row r = new CVector_Row(this);
-		for(int i=0;i<r.dim;i++) {
+		for (int i = 0; i < r.dim; i++) {
 			r.mat[0][i] -= in.mat[0][i];
 		}
 		r.norm();
 		return r;
 	}
+
+	// 正規化したベクトルを返す。
+	public CVector_Row normalize() {
+		CVector_Row r = new CVector_Row(this.dim);
+		double n = this.norm;
+		for (int i = 0; i < this.dim; i++) {
+			double v = this.getValue(i) / n;
+			r.setValue(i, v);
+		}
+		return r;
+	}
+
+	// 自分自身を正規化する
+	public void normalizeThis() {
+		double n = this.norm;
+		for (int i = 0; i < this.dim; i++) {
+			double v = this.getValue(i) / n;
+			this.setValue(i, v);
+		}
+	}
+
 	// getter
 	public int getDim() {
 		return this.dim;
@@ -144,12 +167,18 @@ public class CVector_Row {
 	public double getNorm() {
 		return this.norm;
 	}
-	//ベクトル要素の最大値を返す
+
+	// ノルムの2乗を返す
+	public double getNormSqare() {
+		return this.norm * this.norm;
+	}
+
+	// ベクトル要素の最大値を返す
 	public double getMax() {
 		int pos = this.hwMaxPos();
 		return this.getValue(pos);
 	}
-	
+
 	// setter
 	// 第 j 要素に値を入れる
 	public void setValue(int j, double d) {
@@ -164,6 +193,5 @@ public class CVector_Row {
 		}
 		this.norm();
 	}
-
 
 }

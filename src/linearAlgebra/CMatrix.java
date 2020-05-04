@@ -58,6 +58,36 @@ public class CMatrix {
 		}
 	}
 
+	// 列ベクトルの配列から行列をつくる
+	public CMatrix(CVector_Col[] in) {
+		this.rowN = in[0].getDim();
+		this.colN = in.length;
+		this.mat = new double[this.rowN][this.colN];
+		for (int j = 0; j < this.colN; j++) {
+			this.setCol(j, in[j]);
+		}
+		if (this.rowN == this.colN) {
+			this.isSquare = true;
+		} else {
+			this.isSquare = false;
+		}
+	}
+
+	// 行ベクトルの配列から行列をつくる。
+	public CMatrix(CVector_Row[] in) {
+		this.colN = in[0].getDim();
+		this.rowN = in.length;
+		this.mat = new double[this.rowN][this.colN];
+		for (int i = 0; i < this.rowN; i++) {
+			this.setRow(i, in[i]);
+		}
+		if (this.rowN == this.colN) {
+			this.isSquare = true;
+		} else {
+			this.isSquare = false;
+		}
+	}
+
 	// 転置
 	public CMatrix transpose() {
 		CMatrix r = new CMatrix(this.colN, this.rowN);
@@ -389,10 +419,95 @@ public class CMatrix {
 			R = exHH.byMat(R);
 			Q = Q.byMat(exHH.transpose());
 		}
-		//以上で Q,R ができたので、配列をつくってそれを返す。
-		CMatrix[] r = {Q,R};
+		// 以上で Q,R ができたので、配列をつくってそれを返す。
+		CMatrix[] r = { Q, R };
 		return r;
 	}
+
+	// この行列の固有値を double[] として返し、この行列を固有ベクトル行列に置き換える
+	public double[] eigenValueVec() {
+		//計算用の行列
+		CMatrix origin = new CMatrix(this);
+		// 固有ベクトルがはいる、つもりの CVector_Col 配列
+		int numOfVariables =origin.colN;
+		CVector_Col[] eigenVecArray = new CVector_Col[numOfVariables];
+		for (int i = 0; i < eigenVecArray.length; i++) {
+			eigenVecArray[i] = new CVector_Col(numOfVariables);
+			eigenVecArray[i].setValue(0, 1.0);
+		}
+		// 固有値が入る予定の double 配列
+		double[] eigenValue = new double[numOfVariables];
+		// べき乗法
+		for (int loop = 0; loop < numOfVariables; loop++) {
+			CVector_Col before = eigenVecArray[loop];
+			boolean checkFlag = false; // 収束判定フラグ
+			while (!checkFlag) {
+				CVector_Col after = origin.byVec(before);
+				eigenValue[loop] = after.getNorm();
+				after.normalizeThis();
+				// 収束チェック
+				checkFlag = checkVec(after, before,1.0E-5);
+				if (checkFlag) {
+					eigenVecArray[loop] = after;
+				}
+				// 入れ替え
+				before = after;
+			} // end of while(...
+			// 差し引く行列をつくる
+			CMatrix subMatrix = eigenVecArray[loop].byVec(eigenVecArray[loop].transpose());
+			subMatrix.byScalarThis(eigenValue[loop]);
+			//
+			origin = origin.subtractMat(subMatrix);
+		} // end of for(... べき乗法のおわり
+		//この行列の中身を eigenVecArray で置き換える
+		for(int j=0;j<this.colN;j++) {
+			this.setCol(j, eigenVecArray[j]);
+		}
+		return eigenValue;
+	}
+	// この行列の固有値を double[] として返し、この行列を固有ベクトル行列に置き換える
+		public CVector_Col eigenValueVec_Vec() {
+			//計算用の行列
+			CMatrix origin = new CMatrix(this);
+			// 固有ベクトルがはいる、つもりの CVector_Col 配列
+			int numOfVariables =origin.colN;
+			CVector_Col[] eigenVecArray = new CVector_Col[numOfVariables];
+			for (int i = 0; i < eigenVecArray.length; i++) {
+				eigenVecArray[i] = new CVector_Col(numOfVariables);
+				eigenVecArray[i].setValue(0, 1.0);
+			}
+			// 固有値が入る予定の double 配列
+			double[] eigenValue = new double[numOfVariables];
+			// べき乗法
+			for (int loop = 0; loop < numOfVariables; loop++) {
+				CVector_Col before = eigenVecArray[loop];
+				boolean checkFlag = false; // 収束判定フラグ
+				while (!checkFlag) {
+					CVector_Col after = origin.byVec(before);
+					eigenValue[loop] = after.getNorm();
+					after.normalizeThis();
+					// 収束チェック
+					checkFlag = checkVec(after, before,1.0E-5);
+					if (checkFlag) {
+						eigenVecArray[loop] = after;
+					}
+					// 入れ替え
+					before = after;
+				} // end of while(...
+				// 差し引く行列をつくる
+				CMatrix subMatrix = eigenVecArray[loop].byVec(eigenVecArray[loop].transpose());
+				subMatrix.byScalarThis(eigenValue[loop]);
+				//
+				origin = origin.subtractMat(subMatrix);
+			} // end of for(... べき乗法のおわり
+			//この行列の中身を eigenVecArray で置き換える
+			for(int j=0;j<this.colN;j++) {
+				this.setCol(j, eigenVecArray[j]);
+			}
+			//
+			CVector_Col r = new CVector_Col(eigenValue);
+			return r;
+		}
 
 	// この行列の第p列と第q列を入れ替える
 	public void exchangeCol(int p, int q) {
@@ -485,6 +600,18 @@ public class CMatrix {
 		for (int i = 0; i < this.rowN; i++) {
 			this.mat[i][j] = in[i];
 		}
+	}
+
+	//
+	// 収束チェックのために2つのベクトルの差をとり、しきい値未満なら true を返す
+	static boolean checkVec(CVector_Col x1, CVector_Col x2, double threshold) {
+		boolean r = true;
+		CVector_Col check = x1.subtractVec(x2);
+		for (int i = 0; i < check.getDim(); i++) {
+			if (Math.abs(check.getValue(i)) > threshold)
+				r = false;
+		}
+		return r;
 	}
 
 }

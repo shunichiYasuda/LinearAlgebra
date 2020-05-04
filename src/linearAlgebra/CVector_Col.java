@@ -94,6 +94,24 @@ public class CVector_Col {
 		r.norm();
 		return r;
 	}
+	//正規化されたベクトルを返す。
+	public CVector_Col normalize() {
+		CVector_Col r = new CVector_Col(this.dim);
+		double n = this.norm;
+		for (int i = 0; i < this.dim; i++) {
+			double v = this.getValue(i) / n;
+			r.setValue(i, v);
+		}
+		return r;
+	}
+	//自分自身を正規化する
+	public void normalizeThis() {
+		double n = this.norm;
+		for (int i = 0; i < this.dim; i++) {
+			double v = this.getValue(i) / n;
+			this.setValue(i, v);
+		}
+	}
 	// getter
 	public int getDim() {
 		return this.dim;
@@ -116,6 +134,10 @@ public class CVector_Col {
 	// ノルムを返す
 	public double getNorm() {
 		return this.norm;
+	}
+	//ノルムの2乗を返す
+	public double getNormSqare() {
+		return this.norm*this.norm;
 	}
 	//ベクトル要素の最大要素の値を返す
 	public double getMax() {
